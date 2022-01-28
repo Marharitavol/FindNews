@@ -19,8 +19,9 @@ class ViewController: UIViewController {
     let tableView = UITableView()
     let networkManager = NetworkManager()
     var articles = [Article]()
-    let url = "https://newsapi.org/v2/top-headlines?country=ua&apiKey=4a2d5b1d317f49938cd13e2f6c8d76d1"
+    var url = "https://newsapi.org/v2/top-headlines?country=ua&apiKey=4a2d5b1d317f49938cd13e2f6c8d76d1"
     let secondVC = FilterViewController()
+    let myRefreshControl = UIRefreshControl()
     var fetchingMore = false
     var newUrl = ""
     var page = 1
@@ -32,8 +33,16 @@ class ViewController: UIViewController {
         fetchData(url: url)
         setupScreen()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(addTapped))
-        
+        myRefreshControl.addTarget(self, action: #selector(refresh(sender:)), for: .valueChanged)
+        tableView.refreshControl = myRefreshControl
         reloadView()
+    }
+    
+    @objc private func refresh(sender: UIRefreshControl) {
+        
+        fetchData(url: url)
+        
+        sender.endRefreshing()
     }
     
     func fetchData(url: String) {
@@ -61,7 +70,7 @@ class ViewController: UIViewController {
     
     private func reloadView() {
         secondVC.callback = { url in
-            print(url)
+            self.url = url
             self.fetchData(url: url)
             self.newUrl = url
         }
