@@ -57,10 +57,12 @@ class ViewController: UIViewController {
     
     func showArticle(_ which: Int, url: String) {
         if let url = URL(string: url) {
-            let config = SFSafariViewController.Configuration()
+//            let config = SFSafariViewController.Configuration()
+//            let vc = SFSafariViewController(url: url, configuration: config)
             
-            let vc = SFSafariViewController(url: url, configuration: config)
-            present(vc, animated: true)
+            let vc = NewsDetailViewController(url: url)
+//            present(vc, animated: true)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -104,6 +106,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let article = articles[indexPath.row]
         showArticle(indexPath.row, url: article.url)
+        
+        
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
