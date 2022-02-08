@@ -18,20 +18,22 @@ class TableViewCell: UITableViewCell {
     let articleTitle = UILabel()
     let articleDescription = UILabel()
     let articleImage = UIImageView()
+    let addToFavorite = UIButton(type: .system)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: TableViewCell.identifierCell)
-        setup()
+        setupCell()
+        addToFavorite.addTarget(self, action: #selector(setupAddToFavoriteButton), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup() {
+    func setupCell() {
+        
         let horizontalStackView = UIStackView(arrangedSubviews: [source, author])
         horizontalStackView.axis = .horizontal
-        //horizontalStackView.distribution = .fillEqually
         
         articleImage.contentMode = .scaleAspectFill
         articleImage.clipsToBounds = true
@@ -53,7 +55,15 @@ class TableViewCell: UITableViewCell {
         articleTitle.font = UIFont(name:"HelveticaNeue-Bold", size: 15.0)
         articleDescription.numberOfLines = 0
         articleDescription.font = UIFont(name:"HelveticaNeue", size: 10.0)
-       
+        
+        contentView.addSubview(addToFavorite)
+        addToFavorite.snp.makeConstraints { (make) in
+            make.top.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.size.equalTo(50)
+        }
+        addToFavorite.setImage(UIImage(systemName: "heart"), for: .normal)
+        addToFavorite.tintColor = .red
     }
     
     func congigure(article: Article) {
@@ -65,4 +75,14 @@ class TableViewCell: UITableViewCell {
         articleImage.kf.setImage(with: url)
     }
     
+    @objc func setupAddToFavoriteButton() {
+        
+        if addToFavorite.tag == 0 {
+            addToFavorite.setImage(UIImage(systemName: "heart"), for: .normal)
+            addToFavorite.tag = 1
+        } else {
+            addToFavorite.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            addToFavorite.tag = 0
+        }
+    }
 }
