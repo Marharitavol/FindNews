@@ -8,10 +8,10 @@
 import Foundation
 
 struct ApiModel: Decodable {
-    let articles: [Article]
+    let articles: [ArticleDto]
 }
 
-struct Article: Decodable {
+struct ArticleDto: Decodable {
     let source: Source
     let author: String?
     let title: String?

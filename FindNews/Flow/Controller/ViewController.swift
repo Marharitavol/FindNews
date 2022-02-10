@@ -4,12 +4,6 @@
 //
 //  Created by Rita on 20.01.2022.
 
-//https://newsapi.org/v2/top-headlines?country=ua&category=business&sortBy=publishedAt&apiKey=4a2d5b1d317f49938cd13e2f6c8d76d1
-
-//https://newsapi.org/v2/top-headlines?country=ua&apiKey=4a2d5b1d317f49938cd13e2f6c8d76d1
-
-// 4a2d5b1d317f49938cd13e2f6c8d76d1
-
 import UIKit
 import SnapKit
 import SafariServices
@@ -17,7 +11,7 @@ import SafariServices
 class ViewController: UIViewController {
     
     let tableView = UITableView()
-    let networkManager = NetworkManager()
+    let repository = Repository()
     var articles = [Article]()
     var url = "https://newsapi.org/v2/top-headlines?country=ua&apiKey=4a2d5b1d317f49938cd13e2f6c8d76d1"
     let secondVC = FilterViewController()
@@ -27,26 +21,27 @@ class ViewController: UIViewController {
     var page = 1
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         fetchData(url: url)
         setupScreen()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(addTapped))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(favoriteTapped))
         myRefreshControl.addTarget(self, action: #selector(refresh(sender:)), for: .valueChanged)
         tableView.refreshControl = myRefreshControl
         reloadView()
+        title = "News App"
     }
     
     @objc private func refresh(sender: UIRefreshControl) {
-        
         fetchData(url: url)
-        
         sender.endRefreshing()
     }
     
     func fetchData(url: String) {
-        networkManager.fetchData(url: url) { (articles) in
+        repository.fetchData(url: url) { (articles) in
             self.articles = articles
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -55,11 +50,10 @@ class ViewController: UIViewController {
         }
     }
     
-    func showArticle(_ which: Int, url: String) {
+    func showArticle(url: String) {
         if let url = URL(string: url) {
 //            let config = SFSafariViewController.Configuration()
 //            let vc = SFSafariViewController(url: url, configuration: config)
-            
             let vc = NewsDetailViewController(url: url)
 //            present(vc, animated: true)
             navigationController?.pushViewController(vc, animated: true)
@@ -68,6 +62,11 @@ class ViewController: UIViewController {
     
     @objc func addTapped() {
         navigationController?.pushViewController(secondVC, animated: true)
+    }
+    
+    @objc func favoriteTapped() {
+        let favorite = FavoriteNewsViewController()
+        navigationController?.pushViewController(favorite, animated: true)
     }
     
     private func reloadView() {
@@ -98,15 +97,18 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifierCell) as! TableViewCell
         let article = articles[indexPath.row]
-        cell.congigure(article: article)
+        cell.configure(article: article)
+        
+        cell.faviriteTapped = {
+            self.repository.saveArticleToBD(article)
+        }
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let article = articles[indexPath.row]
-        showArticle(indexPath.row, url: article.url)
-        
+        showArticle(url: article.url)
         
     }
     
@@ -127,7 +129,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         page += 1
         var url = self.newUrl
         url += "&page=\(self.page)"
-        networkManager.fetchData(url: url) { (articles) in
+        repository.fetchData(url: url) { (articles) in
             self.articles.append(contentsOf: articles)
             DispatchQueue.main.async {
                 self.tableView.reloadData()

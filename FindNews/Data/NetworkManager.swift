@@ -9,7 +9,7 @@ import Foundation
 
 class NetworkManager {
     
-    func fetchData(url: String, completion: @escaping (_ answer: [Article]) -> ()) {
+    func fetchData(url: String, completion: @escaping (_ answer: [ArticleDto]) -> ()) {
         
         guard let url = URL(string: url) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in

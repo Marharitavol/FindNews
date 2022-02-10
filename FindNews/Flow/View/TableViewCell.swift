@@ -19,6 +19,7 @@ class TableViewCell: UITableViewCell {
     let articleDescription = UILabel()
     let articleImage = UIImageView()
     let addToFavorite = UIButton(type: .system)
+    var faviriteTapped: (() -> ())?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: TableViewCell.identifierCell)
@@ -66,8 +67,8 @@ class TableViewCell: UITableViewCell {
         addToFavorite.tintColor = .red
     }
     
-    func congigure(article: Article) {
-        source.text = article.source.name
+    func configure(article: Article) {
+        source.text = article.source
         author.text = article.author
         articleTitle.text = article.title
         articleDescription.text = article.description
@@ -76,12 +77,13 @@ class TableViewCell: UITableViewCell {
     }
     
     @objc func setupAddToFavoriteButton() {
-        
         if addToFavorite.tag == 0 {
-            addToFavorite.setImage(UIImage(systemName: "heart"), for: .normal)
-            addToFavorite.tag = 1
-        } else {
             addToFavorite.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            addToFavorite.tag = 1
+            faviriteTapped?()
+            
+        } else {
+            addToFavorite.setImage(UIImage(systemName: "heart"), for: .normal)
             addToFavorite.tag = 0
         }
     }

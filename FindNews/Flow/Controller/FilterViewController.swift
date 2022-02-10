@@ -49,7 +49,7 @@ class FilterViewController: UIViewController {
         stackView.spacing = 8
         view.addSubview(stackView)
         stackView.snp.makeConstraints { (make) in
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(100)
         }
         categoryLabel.text = "category"

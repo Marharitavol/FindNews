@@ -8,5 +8,7 @@ target 'FindNews' do
   # Pods for FindNews
   pod 'SnapKit', '~> 5.0.0'
   pod 'Kingfisher', '~> 6.3.1'
+  pod 'RealmSwift', '~> 10.8.1'
+
   
 end
